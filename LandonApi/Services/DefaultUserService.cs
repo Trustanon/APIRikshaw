@@ -39,9 +39,26 @@ namespace LandonApi.Services
                 return (false, firstError);
             }
 
-            return (true, null);
+            return(true,null);
         }
 
+
+        public async Task<(bool Succeeded, string Error)> EditUserAsync(ClaimsPrincipal user, EditForm form)
+        {
+            var entity = await _userManager.GetUserAsync(user);
+            entity.FirstName = form.FirstName;
+            entity.LastName = form.LastName;
+            //entity = changes;
+            var result = await _userManager.UpdateAsync(entity);
+            if (!result.Succeeded)
+            {
+                var firstError = result.Errors.FirstOrDefault()?.Description;
+                return (false, firstError);
+            }
+            return (true, null);
+        }
+   
+    
         public async Task<PagedResults<User>> GetUsersAsync(
             PagingOptions pagingOptions,
             SortOptions<User, UserEntity> sortOptions,

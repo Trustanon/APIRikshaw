@@ -17,6 +17,7 @@ namespace LandonApi.Services
             CancellationToken ct);
 
         Task<(bool Succeeded, string Error)> CreateUserAsync(RegisterForm form);
+        Task<(bool Succeeded, string Error)> EditUserAsync(ClaimsPrincipal user,EditForm form);
         Task<User> GetUsersAsync(ClaimsPrincipal user);
     }
 }

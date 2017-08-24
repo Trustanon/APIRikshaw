@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -81,6 +82,30 @@ namespace LandonApi.Controllers
             if (user == null) return NotFound();
 
             return Ok(user);
+        }
+
+        [Authorize]
+        [HttpPatch("edit", Name = nameof(EditMeAsync))]
+        public async Task<IActionResult> EditMeAsync(
+            [FromBody] EditForm form,
+            CancellationToken ct,
+            ClaimsPrincipal user)
+        {
+            if (!ModelState.IsValid) return BadRequest(new ApiError(ModelState));
+            if (user == null) return BadRequest();
+
+            var (succeeded, error) = await _userService.EditUserAsync(User,form);
+
+            var users = await _userService.GetUsersAsync(User);
+            if (succeeded) return Ok(users);
+
+            return BadRequest(new ApiError
+            {
+                Message = "Registration failed.",
+                Detail = error
+            });
+
+            // var existinUser
         }
 
         [HttpPost(Name = nameof(RegisterUserAsync))]

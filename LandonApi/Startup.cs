@@ -78,7 +78,15 @@ namespace LandonApi
             });
 
             // Add ASP.NET Core Identity
-            services.AddIdentity<UserEntity, UserRoleEntity>()
+            services.AddIdentity<UserEntity, UserRoleEntity>(
+                opt =>
+                {
+                    opt.Password.RequireDigit = false;
+                    opt.Password.RequireLowercase = false;
+                    opt.Password.RequireUppercase = false;
+                    opt.Password.RequireNonAlphanumeric = false;
+                    opt.Password.RequiredLength = 6;
+                })
                 .AddEntityFrameworkStores<HotelApiContext, Guid>()
                 .AddDefaultTokenProviders();
 

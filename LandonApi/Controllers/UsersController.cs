@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
@@ -85,7 +86,7 @@ namespace LandonApi.Controllers
         }
 
         [Authorize]
-        [HttpPatch("edit", Name = nameof(EditMeAsync))]
+        [HttpPatch("edit/name", Name = nameof(EditMeAsync))]
         public async Task<IActionResult> EditMeAsync(
             [FromBody] EditForm form,
             CancellationToken ct,
@@ -101,11 +102,81 @@ namespace LandonApi.Controllers
 
             return BadRequest(new ApiError
             {
-                Message = "Registration failed.",
+                Message = "Edit failed.",
                 Detail = error
             });
 
-            // var existinUser
+            
+        }
+        
+        [Authorize]
+        [HttpPatch("edit/email", Name = nameof(EditMeEmailAsync))]
+        public async Task<IActionResult> EditMeEmailAsync(
+        [FromBody] EditEmailForm form,
+        CancellationToken ct,
+        ClaimsPrincipal user)
+        {
+
+            if (!ModelState.IsValid) return BadRequest(new ApiError(ModelState));
+            if (user == null) return BadRequest();
+
+            var (succeeded, error) = await _userService.EditUserEmailAsync(User, form);
+
+            var users = await _userService.GetUsersAsync(User);
+            if (succeeded) return Ok(users);
+
+            return BadRequest(new ApiError
+            {
+                Message = "Email edit failed.",
+                Detail = error
+            });
+
+        
+        }
+
+
+        [Authorize]
+        [HttpPatch("edit/password", Name = nameof(EditMePasswordAsync))]
+        public async Task<IActionResult> EditMePasswordAsync(
+        [FromBody] EditPasswordForm form,
+        CancellationToken ct,
+        ClaimsPrincipal user)
+        {
+
+            if (!ModelState.IsValid) return BadRequest(new ApiError(ModelState));
+            if (user == null) return BadRequest();
+
+            var (succeeded, error) = await _userService.EditUserPasswordAsync(User, form);
+
+            var users = await _userService.GetUsersAsync(User);
+            if (succeeded) return Ok();
+
+            return BadRequest(new ApiError
+            {
+                Message = "Email edit failed.",
+                Detail = error
+            });
+
+
+        }
+
+        [Authorize]
+        [HttpDelete("delete",Name = nameof(DeleteMeAsync))]
+        public async Task<IActionResult> DeleteMeAsync(ClaimsPrincipal user)
+        {
+            if (!ModelState.IsValid) return BadRequest(new ApiError(ModelState));
+            if (user == null) return BadRequest();
+
+            var (succeeded, error) = await _userService.DeleteUserAsync(User);
+
+            if (succeeded) return Ok();
+
+            return BadRequest(new ApiError
+            {
+                Message = "Delete account failed.",
+                Detail = error
+            });
+
         }
 
         [HttpPost(Name = nameof(RegisterUserAsync))]

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 
 namespace LandonApi.Services
 {
@@ -18,6 +19,9 @@ namespace LandonApi.Services
 
         Task<(bool Succeeded, string Error)> CreateUserAsync(RegisterForm form);
         Task<(bool Succeeded, string Error)> EditUserAsync(ClaimsPrincipal user,EditForm form);
+        Task<(bool Succeeded, string Error)> EditUserEmailAsync(ClaimsPrincipal user, EditEmailForm form);
+        Task<(bool Succeeded, string Error)> DeleteUserAsync(ClaimsPrincipal user);
         Task<User> GetUsersAsync(ClaimsPrincipal user);
+        Task<(bool Succeeded,string Error)> EditUserPasswordAsync(ClaimsPrincipal user, EditPasswordForm form);
     }
 }

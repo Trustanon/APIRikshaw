@@ -57,6 +57,34 @@ namespace LandonApi.Services
             }
             return (true, null);
         }
+        public async Task<(bool Succeeded, string Error)> EditUserEmailAsync(ClaimsPrincipal user, EditEmailForm form)
+        {
+            if (form.Email != form.EmailConfirm) return (false, "Emails dont match");
+            var entity = await _userManager.GetUserAsync(user);
+            entity.Email = form.Email;
+            var result = await _userManager.UpdateAsync(entity);
+
+            if (!result.Succeeded)
+            {
+                var firstError = result.Errors.FirstOrDefault()?.Description;
+                return (false, firstError);
+            }
+            return (true, null);
+        }
+
+        public async Task<(bool Succeeded,string Error)> DeleteUserAsync(ClaimsPrincipal user)
+        {
+            var entity = await _userManager.GetUserAsync(user);
+            var result = await _userManager.DeleteAsync(entity);
+
+                if (!result.Succeeded)
+                {
+                    var firstError = result.Errors.FirstOrDefault()?.Description;
+                    return (false, firstError);
+                }
+            return (true, null);
+
+        }
    
     
         public async Task<PagedResults<User>> GetUsersAsync(
@@ -88,6 +116,22 @@ namespace LandonApi.Services
         {
             var entity = await _userManager.GetUserAsync(user);
             return Mapper.Map<User>(entity);
+        }
+
+        public async Task<(bool Succeeded, string Error)> EditUserPasswordAsync(ClaimsPrincipal user, EditPasswordForm form)
+        {
+            if (form.Password != form.PasswordConfirm) return (false, "Passwords dont match");
+            var entity = await _userManager.GetUserAsync(user);
+            var change = _userManager.ChangePasswordAsync(entity, form.PasswordCurrent, form.Password);
+
+            var result = await _userManager.UpdateAsync(entity);
+
+            if (!result.Succeeded)
+            {
+                var firstError = result.Errors.FirstOrDefault()?.Description;
+                return (false, firstError);
+            }
+            return (true, null);
         }
     }
 }

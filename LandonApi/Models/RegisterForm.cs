@@ -18,6 +18,7 @@ namespace LandonApi.Models
         [MinLength(6)]
         [MaxLength(90)]
         [Display(Name = "password", Description = "Password")]
+        [Secret]
         public string Password { get; set; }
 
         [Required]

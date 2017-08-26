@@ -77,6 +77,15 @@ namespace LandonApi
                 opt.AllowPasswordFlow();
             });
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins",
+                builder =>
+                {
+                    builder.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin();
+                });
+            });
+
             // Add ASP.NET Core Identity
             services.AddIdentity<UserEntity, UserRoleEntity>(
                 opt =>
@@ -151,6 +160,7 @@ namespace LandonApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            app.UseCors("AllowAllOrigins");
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
